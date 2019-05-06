@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CPython Pull Requests</title>
+    <style>
+        td {
+            height: 50px;
+            width: 50px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .container {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="amber lighten-5">
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper">
+                <a href="/" class="brand-logo center"> CPython Open Pull Requests</a>
+            </div>
+        </nav>
+    </div>
+    <div class="container">
+        <input type="text" id="search_input" onkeyup="search()" placeholder="Search for file names" title="Type file name here">
+        <table id="pull_request_table">
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Pull Requests</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for file_name in results %}
+                <tr>
+                    <td><a href="https://github.com/python/cpython/blob/master/{{file_name}}">{{ file_name }}</a></td>
+                    {% for pr in results[file_name] %}
+                    <td><a href="https://github.com/python/cpython/pull/{{pr}}" target="_blank">{{ pr }}</a></td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--JavaScript at end of body for optimized loading-->
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        function search() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search_input");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("pull_request_table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                file_name = tr[i].getElementsByTagName("td")[0];
+                if (file_name) {
+                    txtValue = file_name.textContent || file_name.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
