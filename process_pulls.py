@@ -14,5 +14,15 @@ def pr_by_file():
             files[filename].add(pr)
     return files
 
-pprint(pr_by_file())
+# pprint(pr_by_file())
 
+def change_values_to_list():
+    files = pr_by_file()
+    for filename, pr in files.items():
+        files[filename]=list(pr)
+    files = dict(sorted(files.items()))
+    with open('test_with.json', 'w') as outfile:
+        return json.dump(files, outfile)
+
+if __name__ == "__main__":
+    change_values_to_list()

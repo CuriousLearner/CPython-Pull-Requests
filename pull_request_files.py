@@ -10,7 +10,6 @@ pulls_url = 'https://api.github.com/repos/python/cpython/pulls'
 query = 'page=1&per_page=100'
 oauth_token = os.environ.get("GH_AUTH")
 # payload = {'page': 1, 'per_page': 100}
-
 def _parse_header_link(headers):
     headers_link = headers.get('link').split(', ')
     links = {}
@@ -24,7 +23,7 @@ def _parse_header_link(headers):
 def retrieve_open_issues(pulls_url):
     open_pull_requests = {}
     while True:
-        response = requests.get(pulls_url, auth=('csabella', oauth_token))
+        response = requests.get(pulls_url, auth=('storymode7', oauth_token))
         links = _parse_header_link(response.headers)
         for issue in response.json():
             open_pull_requests[issue['number']] = issue
