@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = 'very-hard-to-guess-key'
 @app.route("/")
 @app.route("/index")
 def index():
-    with open('test_with.json', 'rb') as files_to_pr:
+    with open('pr_files.json', 'rb') as files_to_pr:
         json_str = files_to_pr.read()
         results = json.loads(json_str)
         results = dict(results)
