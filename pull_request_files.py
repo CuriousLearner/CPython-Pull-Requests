@@ -14,7 +14,6 @@ def get_pull_request_details(endCursor=None):
                            pullRequests(states: OPEN, first: 100, after: $previousEndCursor) {
                                nodes {
                                  title
-                                 url
                                  number
                                  files(first: 100) {
                                    nodes{
@@ -64,6 +63,3 @@ while response['data']['repository']['pullRequests']['pageInfo']['hasNextPage']:
 
 with open('pull_requests.json', 'w') as outfile:
     json.dump(pull_requests, outfile)
-
-
-
