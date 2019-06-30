@@ -1,45 +1,65 @@
 import json
+from inspect import cleandoc
 import os
-import re
-
 import requests
 
-
-
-pulls_url = 'https://api.github.com/repos/python/cpython/pulls'
-query = 'page=1&per_page=100'
+url = 'https://api.github.com/graphql'
 oauth_token = os.environ.get("GH_AUTH")
-# payload = {'page': 1, 'per_page': 100}
-
-def _parse_header_link(headers):
-    headers_link = headers.get('link').split(', ')
-    links = {}
-    prog = re.compile(r'<(?P<url>.*?)>; rel="(?P<rel>\w+)"')
-    for link in headers_link:
-        g = re.match(prog, link)
-        links[g['rel']] = g['url']
-    return links
+headers = {'Authorization': f'bearer {oauth_token}'}
 
 
-def retrieve_open_issues(pulls_url):
-    open_pull_requests = {}
-    while True:
-        response = requests.get(pulls_url, auth=('csabella', oauth_token))
-        links = _parse_header_link(response.headers)
-        for issue in response.json():
-            open_pull_requests[issue['number']] = issue
-        if 'next' not in links:
-            break
-        pulls_url = links['next']
-    return open_pull_requests
+def get_pull_request_details(endCursor=None):
+    graphql_query = '''query($previousEndCursor:String) {
+                         repository(owner:"python", name:"cpython") {
+                           pullRequests(states: OPEN, first: 100, after: $previousEndCursor) {
+                               nodes {
+                                 title
+                                 number
+                                 files(first: 100) {
+                                   nodes{
+                                     path
+                                   }
+                                 }
+                               }
+                               pageInfo {
+                                 endCursor
+                                 hasNextPage
+                               }
+                               totalCount
+                           }
+                         }
+                       }
+                       '''
+    github_query = {}
+    github_query["query"] = cleandoc(graphql_query)
+    if endCursor is not None:
+        query_variables = f'''{{
+                                "previousEndCursor": "{endCursor}"
+                           }}
+                           '''
+        github_query["variables"] = cleandoc(query_variables)
+    github_query = json.dumps(github_query)
+    response = requests.post(url, data=github_query, headers=headers)
+    response.raise_for_status()
+    response = json.loads(response.content)
+    if 'errors' in response:
+        for error in response['errors']:
+            print(error['message'])
+        exit()
+    return response
 
 
-def get_files(issues):
-    for pr in issues.keys():
-        response = requests.get(f"{pulls_url}/{pr}/files" + '?', auth=('csabella', oauth_token))
-        issues[pr]['files'] = response.json()
-    return issues
-
+page = 1
+print(f'[*] Fetching page {page}', end='\r')
+response = get_pull_request_details()
+pull_requests = response['data']['repository']['pullRequests']['nodes']
+print(f'[✓] Fetched page {page} ')
+while response['data']['repository']['pullRequests']['pageInfo']['hasNextPage']:
+    page = page + 1
+    print(f'[*] Fetching page {page}', end='\r')
+    response = get_pull_request_details(response['data']['repository']['pullRequests']['pageInfo']['endCursor'])
+    print(f'[✓] Fetched page {page} ')
+    pull_requests = pull_requests + response['data']['repository']['pullRequests']['nodes']
 
 with open('pull_requests.json', 'w') as outfile:
-    json.dump(get_files(retrieve_open_issues(pulls_url + '?' + query)), outfile)
+    json.dump(pull_requests, outfile)
