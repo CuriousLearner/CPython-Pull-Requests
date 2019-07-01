@@ -1,5 +1,18 @@
-import json
 from flask import Flask, render_template
+import pull_request_files
+from apscheduler.schedulers.background import BackgroundScheduler
+
+files = pull_request_files.main()
+
+
+def timed_job():
+    global files
+    files = pull_request_files.main()
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(timed_job, 'interval', minutes=1)
+scheduler.start()
 
 
 app = Flask(__name__)
@@ -9,10 +22,7 @@ app.config['SECRET_KEY'] = 'very-hard-to-guess-key'
 @app.route("/")
 @app.route("/index")
 def index():
-    with open('pr_files.json', 'rb') as files_to_pr:
-        json_str = files_to_pr.read()
-        results = json.loads(json_str)
-        results = dict(results)
+    results = files
 
     final_results = dict()
     for file_name in results.keys():
