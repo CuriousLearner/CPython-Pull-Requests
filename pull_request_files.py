@@ -54,6 +54,13 @@ def get_pull_request_details(endCursor=None):
     return response
 
 
+def get_pr_titles(pull_requests):
+    pr_titles = dict()
+    for pr in pull_requests:
+        pr_titles.update({pr['number']: pr['title']})
+    return pr_titles
+
+
 def main():
     page = 1
     response = get_pull_request_details()
@@ -63,8 +70,9 @@ def main():
         response = get_pull_request_details(response['data']['repository']['pullRequests']['pageInfo']['endCursor'])
         pull_requests = pull_requests + response['data']['repository']['pullRequests']['nodes']
 
+    pr_titles = get_pr_titles(pull_requests)
     files = process_pulls.main(pull_requests)
-    return files
+    return files, pr_titles
 
 
 if __name__ == "__main__":

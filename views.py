@@ -2,12 +2,12 @@ from flask import Flask, render_template
 import pull_request_files
 from apscheduler.schedulers.background import BackgroundScheduler
 
-files = pull_request_files.main()
+files, pr_titles = pull_request_files.main()
 
 
 def timed_job():
-    global files
-    files = pull_request_files.main()
+    global files, pr_titles
+    files, pr_titles = pull_request_files.main()
 
 
 scheduler = BackgroundScheduler()
@@ -28,7 +28,9 @@ def index():
     for file_name in results.keys():
         if not file_name.startswith('Misc'):
             final_results[file_name] = results[file_name]
-    return render_template('index.html', results=final_results)
+    return render_template(
+        'index.html', results=final_results, pr_titles=pr_titles,
+    )
 
 
 if __name__ == '__main__':
