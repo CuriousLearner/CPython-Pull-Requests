@@ -14,4 +14,6 @@ dictionaries returned by `pull_request_files.py
 `views.py` Aside from the flask code, it also contains code for APScheduler. It updates the `files` variable in the background
 at specific intervals.
 
+![Pulls-Screenshot](static/images/pulls-front.png)
+
 :-)
