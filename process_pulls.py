@@ -14,6 +14,7 @@ def change_values_to_list(pull_requests):
     files = pr_by_file(pull_requests)
     for filename, pr in files.items():
         files[filename] = list(pr)
+        files[filename].sort()
     files = dict(sorted(files.items()))
     return files
 
