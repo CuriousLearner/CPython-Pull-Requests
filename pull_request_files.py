@@ -13,7 +13,7 @@ oauth_token = os.environ.get("GH_AUTH")
 headers = {'Authorization': f'bearer {oauth_token}'}
 
 
-class pullRequests:
+class PullRequests:
     def __init__(self, data):
         self.pr_data = data
         self.files = process_pulls.get_files(self.pr_data)
@@ -71,7 +71,7 @@ def main():
           response['data']['repository']['pullRequests']['pageInfo']['endCursor']
         )
         results = results + response['data']['repository']['pullRequests']['nodes']
-    pr_data = pullRequests(results)
+    pr_data = PullRequests(results)
     return pr_data
 
 
