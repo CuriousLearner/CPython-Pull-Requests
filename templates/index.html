@@ -15,6 +15,30 @@
             padding-top: 100px;
             padding-bottom: 100px;
         }
+
+        .pr-number {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Tooltip text */
+        .pr-number .pr-title {
+            visibility: hidden;
+            width: 200px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 3px 3px 3px 3px;
+            margin-left: 5px;
+            border-radius: 7px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .pr-number:hover .pr-title {
+            visibility: visible;
+        }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -49,11 +73,14 @@
             </thead>
 
             <tbody>
-                {% for file_name in results %}
+                {% for file_name in results.files %}
                 <tr>
                     <td><a href="https://github.com/python/cpython/blob/master/{{file_name}}">{{ file_name }}</a></td>
-                    {% for pr in results[file_name] %}
-                    <td><a href="https://github.com/python/cpython/pull/{{pr}}" target="_blank">{{ pr }}</a></td>
+                    {% for pr in results.files[file_name] %}
+                    <td class="pr-number">
+                        <a href="https://github.com/python/cpython/pull/{{pr}}" target="_blank">{{ pr }}</a>
+                        <span class="pr-title">{{ results.titles[pr] }}</span>
+                    </td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

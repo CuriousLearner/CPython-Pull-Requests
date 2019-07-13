@@ -2,16 +2,16 @@ from flask import Flask, render_template
 import pull_request_files
 from apscheduler.schedulers.background import BackgroundScheduler
 
-files = pull_request_files.main()
+pr_data = pull_request_files.main()
 
 
 def timed_job():
-    global files
-    files = pull_request_files.main()
+    global pr_data
+    pr_data = pull_request_files.main()
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(timed_job, 'interval', minutes=1)
+scheduler.add_job(timed_job, 'interval', minutes=5)
 scheduler.start()
 
 
@@ -22,13 +22,7 @@ app.config['SECRET_KEY'] = 'very-hard-to-guess-key'
 @app.route("/")
 @app.route("/index")
 def index():
-    results = files
-
-    final_results = dict()
-    for file_name in results.keys():
-        if not file_name.startswith('Misc'):
-            final_results[file_name] = results[file_name]
-    return render_template('index.html', results=final_results)
+    return render_template('index.html', results=pr_data)
 
 
 if __name__ == '__main__':
