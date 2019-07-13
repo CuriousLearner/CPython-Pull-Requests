@@ -13,6 +13,13 @@ oauth_token = os.environ.get("GH_AUTH")
 headers = {'Authorization': f'bearer {oauth_token}'}
 
 
+class pullRequests:
+    def __init__(self, data):
+        self.pr_data = data
+        self.files = process_pulls.get_files(self.pr_data)
+        self.titles = process_pulls.get_titles(self.pr_data)
+
+
 def get_pull_request_details(endCursor=None):
     graphql_query = '''query($previousEndCursor:String) {
                          repository(owner:"python", name:"cpython") {
@@ -54,25 +61,18 @@ def get_pull_request_details(endCursor=None):
     return response
 
 
-def get_pr_titles(pull_requests):
-    pr_titles = dict()
-    for pr in pull_requests:
-        pr_titles.update({pr['number']: pr['title']})
-    return pr_titles
-
-
 def main():
     page = 1
     response = get_pull_request_details()
-    pull_requests = response['data']['repository']['pullRequests']['nodes']
+    results = response['data']['repository']['pullRequests']['nodes']
     while response['data']['repository']['pullRequests']['pageInfo']['hasNextPage']:
         page = page + 1
-        response = get_pull_request_details(response['data']['repository']['pullRequests']['pageInfo']['endCursor'])
-        pull_requests = pull_requests + response['data']['repository']['pullRequests']['nodes']
-
-    pr_titles = get_pr_titles(pull_requests)
-    files = process_pulls.main(pull_requests)
-    return files, pr_titles
+        response = get_pull_request_details(
+          response['data']['repository']['pullRequests']['pageInfo']['endCursor']
+        )
+        results = results + response['data']['repository']['pullRequests']['nodes']
+    pr_data = pullRequests(results)
+    return pr_data
 
 
 if __name__ == "__main__":
