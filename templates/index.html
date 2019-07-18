@@ -93,9 +93,20 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
+        {% if file_in_arg is not none %}
+        input = document.getElementById("search_input");
+        input.value= "{{file_in_arg|safe}}";
+        search()
+        {% endif %}
         function search() {
             var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("search_input");
+            if (input.value){
+                window.history.replaceState("results", "Results", "?file="+input.value)
+            } else {
+                window.history.replaceState("home", "CPython Pull Requests", "/")
+            }
+
             filter = input.value.toUpperCase();
             table = document.getElementById("pull_request_table");
             tr = table.getElementsByTagName("tr");
