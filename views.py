@@ -22,9 +22,8 @@ app.config['SECRET_KEY'] = 'very-hard-to-guess-key'
 @app.route("/")
 @app.route("/index")
 def index():
-    file_in_arg = request.args.get('file')
-    return render_template('index.html', results=pr_data, file_in_arg=file_in_arg)
-
+    files = request.args.get('files')
+    return render_template('index.html', results=pr_data, files=files)
 
 
 if __name__ == '__main__':
