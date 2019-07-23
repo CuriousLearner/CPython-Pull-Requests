@@ -1,20 +1,45 @@
-# pulls
-Get Files for all open Pull Requests
+# Cpython Pull Requests
 
-Basic code to query GitHub and get the open PRs by file name.
+## What does Cpython Pull Requests do?
+Cpython Pull Requests (formerly pulls) is a Flask app to find the PRs opened against a given file in the [cpython](https://github.com/python/cpython/) repository. This is where contributors can find work to do and core developers can look for stale PRs that might be awaiting their review.   
+Take a test drive at [cpython-pulls.herokuapp.com](https://cpython-pulls.herokuapp.com)
 
-If you want to look at the code that fetches and processes the data:
-`pull_request_files.py` creates an object of PullRequests class. The object contains the raw data returned
-from the GraphQL query along with a variable `files` containing dictionary with file names as key and PR number
-as the value. There's also a titles variable that is a dictionary storing PR title for each PR number.
+## Features
+* Uses [GitHub's GraphQL API](https://developer.github.com/v4/guides/intro-to-graphql/)  
+  (So we are fast! ~26 seconds for one request)
+* Refreshes data every 5 minutes  
+  (We all love fresh data. Yum!)
+* Consistent URLs  
+  (For each search your URL gets updated to something like: [cpython-pulls.herokuapp.com?files=pythonrun](https://cpython-pulls.herokuapp.com?files=pythonrun))
+* Search for multiple files at once  
+  (A URL like [cpython-pulls.herokuapp.com?files=travis,coverage](https://cpython-pulls.herokuapp.com?files=travis,coverage) will show you PRs opened for files matching `travis` OR `coverage`)
+* Case insensitive search  
+  (No more straining your pinky for that shift ⌨)
 
-`process_pulls.py` Contains functions used by pull_request_files to process the GraphQL data returned by GitHub. 
+## Setup
+### Generating Personal access token
+You need to create a personal access token at [https://github.com/settings/tokens](https://github.com/settings/tokens) of your GitHub account. The token doesn't need to have any particular scope. The default public access works fine.  
+**NOTE**: This token will be used via `GH_AUTH` environment variable.
 
-`views.py` Aside from the flask code, it also contains code for APScheduler which updates the `files` variable in the background
-at specific intervals.
+### Local setup
+* `pip install -r requirements.txt`
+* Edit `.env.sample` and save it as `.env`
+* `FLASK_APP=views.py flask run`  
+   You can also do:  
+   `export FLASK_APP=views.py`  
+   `flask run`
+* Wait... ⌛ (~26 Sec)
+* Hurry to [127.0.0.1:5000](127.0.0.1:5000)!
 
-You need to create a personal access token at settings/Developer settings of your GitHub account. The token doesn't need to have any
-particular scope. The default public access works fine.
+### Heroku setup
+* Go to [Heroku dashboard](https://dashboard.heroku.com/new-app) and create a new app. 
+* Connect to GitHub or push directly to heroku remote.
+* Go to `Settings -> Config Vars` and add `GH_AUTH` as your key, and your access token as value.
+* Now, as soon as you push, you're live!  
+  (Well not so soon. Deploying will take around ~26 seconds to fetch data for the first time)
+
+## Contributors
+Head to [CONTRIBUTORS.txt](CONTRIBUTORS.txt) to see the list of all the awesome contributors.
 
 
 ![Pulls-Screenshot](static/images/sample.gif)

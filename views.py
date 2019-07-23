@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import pull_request_files
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -22,7 +22,8 @@ app.config['SECRET_KEY'] = 'very-hard-to-guess-key'
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template('index.html', results=pr_data)
+    files = request.args.get('files')
+    return render_template('index.html', results=pr_data, files=files)
 
 
 if __name__ == '__main__':

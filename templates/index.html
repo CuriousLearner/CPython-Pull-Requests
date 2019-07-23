@@ -93,21 +93,50 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
+        {% if files is not none %}
+        input = document.getElementById("search_input");
+        input.value= "{{files|safe}}";
+        search();
+        {% endif %}
+
         function search() {
-            var input, filter, table, tr, td, i, txtValue;
+            var input, filter, table, tr, td, i, txtValue, file_array;
             input = document.getElementById("search_input");
-            filter = input.value.toUpperCase();
+            if (input.value){
+                window.history.replaceState("results", "Results", "?files="+input.value);
+            } else {
+                window.history.replaceState("home", "CPython Pull Requests", "/");
+            }
+            file_array = input.value.toUpperCase().split(',');
+            for (i = 0; i < file_array.length; i++) {
+                file_array[i] = file_array[i].trim();
+                if (file_array[i] === "") {
+                    file_array.pop(i);
+                }
+            }
             table = document.getElementById("pull_request_table");
             tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
-                file_name = tr[i].getElementsByTagName("td")[0];
-                if (file_name) {
-                    txtValue = file_name.textContent || file_name.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
+            for(i=0; i<tr.length; i++){
+                if (rowWithMatchingFiles(tr[i], file_array)){
+                    tr[i].style.display = "";
+                }
+                else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        function rowWithMatchingFiles(row, file_array){
+            file_name = row.getElementsByTagName("td")[0];
+            if(file_name){
+                txtValue = file_name.textContent || file_name.innerText;
+                if (file_array.length != 0){
+                    return file_array.reduce(function (result, file){
+                        return (txtValue.toUpperCase().indexOf(file) > -1) || result;
+                    }, false);
+                }
+                else{
+                    return true;
                 }
             }
         }
