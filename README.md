@@ -1,7 +1,7 @@
 # Cpython Pull Requests
 
 ## What does Cpython Pull Requests do?
-Cpython Pull Requests (formerly pulls) is a Flask app to find the PRs opened against a given file in the [cpython](https://github.com/python/cpython/) repository.  
+Cpython Pull Requests (formerly pulls) is a Flask app to find the PRs opened against a given file in the [cpython](https://github.com/python/cpython/) repository. This is where contributors can find work to do and core developers can look for stale PRs that might be awaiting their review.   
 Take a test drive at [cpython-pulls.herokuapp.com](https://cpython-pulls.herokuapp.com)
 
 ## Features
@@ -13,6 +13,8 @@ Take a test drive at [cpython-pulls.herokuapp.com](https://cpython-pulls.herokua
   (For each search your URL gets updated to something like: [cpython-pulls.herokuapp.com?files=pythonrun](https://cpython-pulls.herokuapp.com?files=pythonrun))
 * Search for multiple files at once  
   (A URL like [cpython-pulls.herokuapp.com?files=travis,coverage](https://cpython-pulls.herokuapp.com?files=travis,coverage) will show you PRs opened for files matching `travis` OR `coverage`)
+* Case insensitive search  
+  (No more straining your pinky for that shift ⌨)
 
 ## Setup
 ### Generating Personal access token
