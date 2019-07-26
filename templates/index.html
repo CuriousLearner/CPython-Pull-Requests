@@ -116,7 +116,7 @@
             }
             table = document.getElementById("pull_request_table");
             tr = table.getElementsByTagName("tr");
-            for(i=0; i<tr.length; i++){
+            for(i=1; i<tr.length; i++){
                 if (rowWithMatchingFiles(tr[i], file_array)){
                     tr[i].style.display = "";
                 }
